@@ -26,7 +26,7 @@ ALL_COLORS = [num for tup in COLORS for num in tup]
 def get_image() -> Image:
     """
     Open file explorer, wait for user to open an image
-    :return: The image
+    :return: The opened image
     """
     print("Open image", end="\r")
     root = tkinter.Tk()
@@ -36,18 +36,15 @@ def get_image() -> Image:
 
     img = Image.open(img_path)
     print("Selected image: ", img_path.split("/")[-1])
-
-    # # If the image has attributed `palette` its metadata is a bit different.
-    # # To solve this just open the image in paint and save it
-    # if img.palette:
-    #     print("Image has `Palette` attribute. Open it in Paint and save.")
-    #     os.system(f'mspaint.exe "{Path(img_path)}"')
-    #     return None
-
     return img, img_path
 
 
 def quantize(img: Image) -> Image:
+    """
+    Convert the passed image into a predefined color palette
+    :param img: The image to be dithered
+    :return: THe dithered image
+    """
     img = img.convert("RGB")
 
     palette_image = Image.new("P", img.size)
@@ -69,5 +66,6 @@ path.insert(1, "derehtid")
 path = ".".join(path)
 path = path[::-1]
 
+# Save the image to the same directory as the original, with "dithered" suffix
 img.save(path)
 print("Image saved to '", path, "'")
