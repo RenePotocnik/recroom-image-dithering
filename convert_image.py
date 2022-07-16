@@ -74,7 +74,14 @@ def resize(img: Image) -> Image:
 
     # Repeat until the users enter a valid dimension
     while not m:
-        m = re.match(r"^(\d+)\D+(\d+)$", input("Enter the new image dimension [WxH]\n> ").strip())
+        res_input = input("Enter the new image dimension [WxH] or [__%]\n> ").strip()
+        if res_input.find("%") == -1:
+            m = re.match(r"^(\d+)\D+(\d+)$", res_input)
+        else:
+            m_percent = re.match(r"(\d+)", res_input)
+            width = int(img.width * float(m_percent.group(1)) / 100)
+            height = int(img.height * float(m_percent.group(1)) / 100)
+            return img.resize((width, height))
 
     return img.resize((int(m.group(1)), int(m.group(2))))
 
