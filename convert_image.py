@@ -70,25 +70,53 @@ def resize(img: Image) -> Image:
     :return: Resized image
     """
     m = None
-    print(f"Original image dimension: {img.width}x{img.height}")
+    new_size = (-1, -1)
 
-    # Repeat until the users enter a valid dimension
-    while not m:
-        res_input = input("Enter the new image dimension [WxH] or [__%]\n> ").strip()
-        if res_input.find("%") == -1:
-            m = re.match(r"^(\d+)\D+(\d+)$", res_input)
-        else:
-            m_percent = re.match(r"(\d+)", res_input)
-            width = int(img.width * float(m_percent.group(1)) / 100)
-            height = int(img.height * float(m_percent.group(1)) / 100)
-            return img.resize((width, height))
+    print(f"\nOriginal image dimension: {img.width}x{img.height}")
 
-    return img.resize((int(m.group(1)), int(m.group(2))))
+    print("\nHow would you like to scale the image; [enter number]\n"
+          "1. Scale to WIDTH & HEIGHT\n"
+          "2. Scale uniformly by PERCENTAGE\n"
+          "3. Fit to WIDTH\n"
+          "4. Fit to HEIGHT")
+
+    while True:
+        try:
+            scale_method: int = int(re.match(r"(\d+)", input("> ").strip()).group(1))
+            break
+        except AttributeError:
+            print("Enter a number between 1 and 4")
+
+    # Scale to WxH
+    if scale_method == 1:
+        while not m:
+            m = re.match(r"^(\d+)\D+(\d+)$", input("Enter the new image dimensions [WxH]\n> ").strip())
+        new_size: Tuple[int, int] = (int(m.group(1)), int(m.group(2)))
+
+    # Scale to Percentage
+    if scale_method == 2:
+        while not m:
+            m = re.match(r"(\d+)", input("Enter the PERCENTAGE of the image dimension [__%]\n> ").strip())
+        new_size = int(img.width * float(m.group(1)) / 100), int(img.height * float(m.group(1)) / 100)
+
+    # Fit to Width
+    if scale_method == 3:
+        while not m:
+            m = re.match(r"(\d+)", input("Enter the new image WIDTH\n> ").strip())
+        new_size = int(m.group(1)), int(float(m.group(1)) / img.width * img.height)
+
+    # Fit to Height
+    if scale_method == 4:
+        while not m:
+            m = re.match(r"(\d+)", input("Enter the new image HEIGHT\n> ").strip())
+        new_size = int(float(m.group(1)) / img.height * img.width), int(m.group(1))
+
+    return img.resize(new_size)
 
 
 def choose():
     """
-    Propt the player to select a function
+    Prompt the player to select a function
     :return: Name of the function [Callable]
     """
     functions: Dict[Callable[[Image], Image], str] = {
