@@ -1,5 +1,6 @@
 import itertools
 import re
+import time
 import tkinter
 from tkinter import filedialog
 from typing import List, Tuple, Dict, Callable
@@ -95,19 +96,23 @@ def choose():
 
 
 def main():
-    img, img_path = get_image()
-    img = choose()(img)
+    while True:
+        img, img_path = get_image()
+        img = choose()(img)
 
-    path = img_path[::-1].split(".")
-    path.insert(1, "wen")
-    path = ".".join(path)
-    path = path[::-1]
+        path = img_path[::-1].split(".")
+        path.insert(1, "wen")
+        path = ".".join(path)
+        path = path[::-1]
 
-    # Save the image to the same directory as the original, with "dithered" suffix
-    img.save(path)
-    print("Image saved to '", path, "'")
+        # Save the image to the same directory as the original, with "dithered" suffix
+        img.save(path)
+        print("Image saved to '" + path + "'")
+
+        if input("\n1. New image\n2. Exit\n> ").find("2") != -1:
+            exit()
+        time.sleep(0.5)
 
 
 if __name__ == '__main__':
     main()
-    input("\nPress enter to exit")
