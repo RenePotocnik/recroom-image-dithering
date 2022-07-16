@@ -31,7 +31,7 @@ def get_image() -> Image:
     Open file explorer, wait for user to open an image
     :return: The opened image
     """
-    print("Open image", end="\r")
+    print("Open image ", end="\r")
     root = tkinter.Tk()
     root.withdraw()
     img_path = filedialog.askopenfilename(filetypes=[("Image", ".png .jpg")])
