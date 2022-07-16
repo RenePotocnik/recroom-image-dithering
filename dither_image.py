@@ -1,6 +1,8 @@
+import itertools
+import re
 import tkinter
 from tkinter import filedialog
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Callable
 
 from PIL import Image
 
@@ -20,7 +22,7 @@ COLORS: List[Tuple[int, int, int]] = [(228, 80, 80), (211, 23, 24), (117, 7, 6),
                                       (25, 23, 24), (255, 181, 136), (254, 254, 254)]
 
 # All the RecRoom colors in one list. [R, G, B, R, G, B,...]
-ALL_COLORS = [num for tup in COLORS for num in tup]
+ALL_COLORS: List[int] = list(itertools.chain(*COLORS))
 
 
 def get_image() -> Image:
@@ -39,9 +41,11 @@ def get_image() -> Image:
     return img, img_path
 
 
-def quantize(img: Image) -> Image:
+def quantize(img: Image, dither: int = 1) -> Image:
     """
     Convert the passed image into a predefined color palette
+
+    :param dither: 1 = dither, 0 = not dither
     :param img: The image to be dithered
     :return: THe dithered image
     """
@@ -50,22 +54,60 @@ def quantize(img: Image) -> Image:
     palette_image = Image.new("P", img.size)
     palette_image.putpalette(ALL_COLORS)
     new_image = img.quantize(palette=palette_image,
-                             dither=0 if input("Dither Image? [y/n] ").strip() == "n" else 1).convert("RGB")
+                             dither=dither).convert("RGB")
 
-    print("Opening the dithered image")
+    print("Opening final image")
     new_image.show()
 
     return new_image
 
 
-img, img_path = get_image()
-img = quantize(img)
+def resize(img: Image) -> Image:
+    """
+    Resize the passed image to the entered dimensions
+    :param img: Image to be resized
+    :return: Resized image
+    """
+    m = None
+    print(f"Original image dimension: {img.width}x{img.height}")
 
-path = img_path[::-1].split(".")
-path.insert(1, "derehtid")
-path = ".".join(path)
-path = path[::-1]
+    # Repeat until the users enter a valid dimension
+    while not m:
+        m = re.match(r"^(\d+)\D+(\d+)$", input("Enter the new image dimension [WxH]\n> ").strip())
 
-# Save the image to the same directory as the original, with "dithered" suffix
-img.save(path)
-print("Image saved to '", path, "'")
+    return img.resize((int(m.group(1)), int(m.group(2))))
+
+
+def choose():
+    functions: Dict[Callable[[Image], Image], str] = {
+        lambda img_: quantize(img_, dither=0): "Convert to RecRoom colors",
+        lambda img_: quantize(img_, dither=1): "Convert and Dither to RecRoom colors",
+        resize: "Resize image"
+    }
+    print("\nType the numer in front of the action you wish to perform on the image\n"
+          + "\n".join(f"{num}. {name}" for num, name in enumerate(functions.values(), 1)))
+    while True:
+        selection = input("> ").strip()
+        try:
+            return list(functions.keys())[int(selection) - 1]
+        except (ValueError, TypeError, IndexError):
+            pass
+
+
+def main():
+    img, img_path = get_image()
+    img = choose()(img)
+
+    path = img_path[::-1].split(".")
+    path.insert(1, "wen")
+    path = ".".join(path)
+    path = path[::-1]
+
+    # Save the image to the same directory as the original, with "dithered" suffix
+    img.save(path)
+    print("Image saved to '", path, "'")
+
+
+if __name__ == '__main__':
+    main()
+    input("\nPress enter to exit")
