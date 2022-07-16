@@ -79,7 +79,11 @@ def resize(img: Image) -> Image:
     return img.resize((int(m.group(1)), int(m.group(2))))
 
 
-def choose():
+def choose() -> Callable[[Image], Image]:
+    """
+    Propt the player to select a function
+    :return: Name of the function [Callable]
+    """
     functions: Dict[Callable[[Image], Image], str] = {
         lambda img_: quantize(img_, dither=0): "Convert to RecRoom colors",
         lambda img_: quantize(img_, dither=1): "Convert and Dither to RecRoom colors",
@@ -95,7 +99,11 @@ def choose():
             pass
 
 
-def main():
+def main() -> None:
+    """
+    Main function that ties all the others together.
+    Handles image saving
+    """
     while True:
         img, img_path = get_image()
         img = choose()(img)
