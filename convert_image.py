@@ -79,7 +79,7 @@ def resize(img: Image) -> Image:
     return img.resize((int(m.group(1)), int(m.group(2))))
 
 
-def choose() -> Callable[[Image], Image]:
+def choose():
     """
     Propt the player to select a function
     :return: Name of the function [Callable]
