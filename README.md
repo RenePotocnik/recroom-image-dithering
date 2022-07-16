@@ -21,3 +21,9 @@ You can also resize the image.
 
 Just enter the number in front of the option you'd like to use, and press enter. 
 ![Choose Action To Perform On The Image](images/ChooseAction.png)
+
+The new image will get saved to the same directory as the original.
+
+At last, you'll have an option of choosing and modifying another image (Option 1), or exit the script (Option 2)\
+By default Option 2 is selected, so just press enter to exit\
+![How To Proceed](images/HowToContinue.png)
