@@ -152,7 +152,7 @@ def main() -> None:
         img.save(path)
         print("Image saved to '" + path + "'")
 
-        if input("\n1. New image\n2. Exit [Default: Exit]\n> ").find("2") != -1:
+        if input("\n1. New image\n2. Exit [Default: Exit]\n> ").find("1") == -1:
             exit()
         time.sleep(0.5)
 
